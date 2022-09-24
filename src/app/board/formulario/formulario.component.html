@@ -1,0 +1,51 @@
+<div class="container col-sm-12 col-md-12 ">
+
+  <form class="form-group col-sm-7 col-md-7 form border-light " [formGroup]="miFormulario">
+
+    <h1 class="p-1  text-center text-primary">Nuevo proyecto</h1>
+
+    <div class="mb-12 row">
+
+      <div class="col-12 inputs">
+
+        <label for="formGroupExampleInput" class="form-label  mt-5 ">Nombre de el proyecto:</label>
+        <input type="text" class="form-control" formControlName="nombre" placeholder="Proyecto">
+        <span class="form-text text-danger" *ngIf="campoEsValido('nombre')">
+          Este campo es obligatorio
+        </span>
+
+      </div>
+
+      <div class="col-sm-12 inputs mt-4 row">
+
+        <label for="formGroupExampleInput" class="form-label">Descripcion:</label>
+
+        <input type="text" class="form-control" rows="3" formControlName="descripcion" placeholder="Descripcion de el proyecto">
+        <span class="form-text text-danger"  *ngIf="campoEsValido('descripcion')">
+          Este campo es obligatorio
+        </span>
+
+      </div>
+
+      <div class="col-sm-12 inputs mt-4 row">
+
+        <label for="formGroupExampleInput" class="form-label  ">ciudad donde se realizara:</label>
+
+        <select class="form-select" aria-label="Default select example" formControlName="city_id">
+          <option *ngFor="let city of cities"  [ngValue]="city._id">{{city.ciudad}}</option>
+        </select>
+
+      </div>
+
+
+
+      <div class="col-sm-12 mt-5">
+        <button type="button" class="btn btn-primary float-end pt-2" btn-lg btn-block
+          (click)="agregar()">Agregar</button>
+      </div>
+
+    </div>
+  </form>
+
+
+</div>
