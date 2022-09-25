@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DataService } from '../services/data.service';
-import { City } from '../interfaces/interfaces';
+import { City, Projec } from '../interfaces/interfaces';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faMinusSquare } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { faMinusSquare } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './formulario.component.html',
   styleUrls: ['./formulario.component.css']
 })
-export class FormularioComponent implements OnInit , OnChanges {
+export class FormularioComponent implements OnInit , OnDestroy {
 
   faMinusSquare = faMinusSquare;
   faPlus = faPlus;
@@ -19,35 +20,43 @@ export class FormularioComponent implements OnInit , OnChanges {
   cities: City[] = [];
   filterPost: any;
   ciudadesAr: any[] = [];
+  modificar: boolean = false;
 
-  nombreEmit: string = ''
+  subcripcion:Subscription = null;
 
-
-  miFormulario: FormGroup = this.fb.group({
-    nombre: [this.nombreEmit, [Validators.required]],
-    descripcion: ['', [Validators.required]],
-    city_id: ['', [Validators.required]],
-
-  });
+  miFormulario: any;
 
   constructor(private fb: FormBuilder,
     private dataService: DataService) {
     this.getCities();
-
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    setTimeout(() => {
-      this.dataService.project
-        .subscribe(dataPro => {
-          const { nombre, descripcion, cities } = dataPro;
-          this.nombreEmit = nombre;
-        })
-    }, 100)
+  ngOnDestroy(): void {
+    this.dataService.sendProject(null);
+    this.subcripcion.unsubscribe();
   }
 
 
   ngOnInit(): void {
+
+    this.miFormulario = new FormGroup({
+      nombre: new FormControl('', [Validators.required]),
+      descripcion: new FormControl('', [Validators.required])
+    })
+
+   this.subcripcion = this.dataService.getProject
+       .subscribe( ( dataPro ) => {
+
+
+        this.modificarOb(dataPro._id,dataPro);
+        if (dataPro) {
+          this.modificar = true;
+          this.miFormulario.get('nombre').setValue(dataPro.nombre);
+          this.miFormulario.get('descripcion').setValue(dataPro.descripcion);
+        this.obtenerCiudades(dataPro.cities)
+          console.log(this.miFormulario)
+        }
+      })
 
   }
 
@@ -59,8 +68,6 @@ export class FormularioComponent implements OnInit , OnChanges {
 
   agregar() {
 
-    this.campoEsValido('nombre');
-
     const { nombre, descripcion } = this.miFormulario.value;
     const stringCities = this.ciudadesAr.toString();
 
@@ -70,16 +77,15 @@ export class FormularioComponent implements OnInit , OnChanges {
       cities: stringCities
     }
 
-
-
     if (this.miFormulario.value['nombre'] && this.miFormulario.value['descripcion']) {
-
       this.dataService.postProject(projecto)
         .subscribe(resp => console.log(resp))
       return
     }
     console.log('campos vacios')
   }
+
+
 
   getCities() {
     this.dataService.getCities()
@@ -105,9 +111,23 @@ export class FormularioComponent implements OnInit , OnChanges {
     }, 10)
   }
 
-
-
-  eliminarSeleccion(item: string) {
+  obtenerCiudades(ciudades){
+    const ciudadesAr = ciudades.split(',');
+    for(let i of ciudadesAr){
+      this.ciudadesAr.push(i);
+    }
+    console.log(this.cities)
   }
 
+  eliminarSeleccion(item: string) {
+     let i = this.ciudadesAr.indexOf(item)
+     this.ciudadesAr.splice(i,1);
+  }
+
+  modificarOb(id?,dataProd?){
+       //TODO: Actualizar datos
+       console.log(dataProd , id)
+       this.dataService.putProject(id,dataProd)
+       .subscribe( resp => console.log(resp));
+  }
 }

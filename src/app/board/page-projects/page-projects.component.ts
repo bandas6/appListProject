@@ -42,7 +42,7 @@ export class PageProjectsComponent implements OnInit {
   }
 
   mostrarInfo(project:any){
-    this.dataService.project.emit(project);
+    this.dataService.sendProject(project);
     this.router.navigateByUrl('/board/add');
   }
 

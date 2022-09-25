@@ -11,7 +11,6 @@ import { FormularioComponent } from './formulario/formulario.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FilterPipe } from './pipes/filter.pipe';
 
-
 @NgModule({
   declarations: [
     PageProjectsComponent,

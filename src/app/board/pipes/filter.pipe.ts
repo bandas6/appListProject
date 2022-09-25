@@ -22,6 +22,7 @@ export class FilterPipe implements PipeTransform {
           resultPost.push(post)
 
         }
+
       }
     }
 
