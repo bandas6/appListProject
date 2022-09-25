@@ -20,3 +20,14 @@
   -ms-border-radius: 10px;
   -o-border-radius: 10px;
 }
+
+fa-icon{
+  cursor: pointer;
+  color: rgb(131, 168, 255);
+}
+
+fa-icon:hover{
+
+  color: rgb(58, 96, 186);
+}
+

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Projec, City } from '../interfaces/interfaces';
@@ -8,6 +8,9 @@ import { Projec, City } from '../interfaces/interfaces';
   providedIn: 'root'
 })
 export class DataService {
+
+  @Output() project: EventEmitter<any> = new EventEmitter();
+
 
   urlProject:string = environment.urlPr;
   urlCities:string = environment.urlCt;
@@ -19,8 +22,8 @@ export class DataService {
   .pipe( map( data => data['projects']))
   }
 
-  postProject(project:Projec, id:string){
-    return this.httpClient.post<Projec[] | any>(this.urlProject+'/'+id ,project)
+  postProject(project:Projec){
+    return this.httpClient.post<Projec[] | any>(this.urlProject,project)
     // eslint-disable-next-line @typescript-eslint/dot-notation
     .pipe( map( data => data['projects']))
   }

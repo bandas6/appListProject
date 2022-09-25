@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Projec } from '../interfaces/interfaces';
 import { DataService } from '../services/data.service';
+import { faEject } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-page-projects',
@@ -9,9 +12,14 @@ import { DataService } from '../services/data.service';
 })
 export class PageProjectsComponent implements OnInit {
 
-  projects:Projec[] = [];
+  faEject= faEject;
 
-  constructor(private dataService: DataService) { }
+  projects:Projec[] = [];
+  filterPost:any | Projec[] = [];
+
+
+  constructor(private dataService: DataService,
+              private router:Router) { }
 
   ngOnInit(): void {
     this.getProjects();
@@ -31,6 +39,11 @@ export class PageProjectsComponent implements OnInit {
   getCity(id: string){
     this.dataService.getCity(id)
     .subscribe( city => console.log(city))
+  }
+
+  mostrarInfo(project:any){
+    this.dataService.project.emit(project);
+    this.router.navigateByUrl('/board/add');
   }
 
 }

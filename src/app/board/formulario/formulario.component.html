@@ -9,7 +9,7 @@
       <div class="col-12 inputs">
 
         <label for="formGroupExampleInput" class="form-label  mt-5 ">Nombre de el proyecto:</label>
-        <input type="text" class="form-control" formControlName="nombre" placeholder="Proyecto">
+        <input type="text" class="form-control" [value]="nombreEmit" formControlName="nombre" placeholder="Proyecto">
         <span class="form-text text-danger" *ngIf="campoEsValido('nombre')">
           Este campo es obligatorio
         </span>
@@ -20,29 +20,48 @@
 
         <label for="formGroupExampleInput" class="form-label">Descripcion:</label>
 
-        <input type="text" class="form-control" rows="3" formControlName="descripcion" placeholder="Descripcion de el proyecto">
-        <span class="form-text text-danger"  *ngIf="campoEsValido('descripcion')">
+        <input type="text" class="form-control" rows="3" formControlName="descripcion"
+          placeholder="Descripcion de el proyecto">
+        <span class="form-text text-danger" *ngIf="campoEsValido('descripcion')">
           Este campo es obligatorio
         </span>
 
       </div>
 
-      <div class="col-sm-12 inputs mt-4 row">
+      <div class="personal-row">
 
-        <label for="formGroupExampleInput" class="form-label  ">ciudad donde se realizara:</label>
+        <div class="col-sm-4 inputs mt-4 ">
 
-        <select class="form-select" aria-label="Default select example" formControlName="city_id">
-          <option *ngFor="let city of cities"  [ngValue]="city._id">{{city.ciudad}}</option>
-        </select>
+          <label for="formGroupExampleInput" class="form-label  ">ciudad donde se realizara:</label>
+
+          <input type="text" class="form-control" required [(ngModel)]="filterPost"
+            [ngModelOptions]="{standalone: true}">
+
+          <div class="list-group col-sm-5" *ngFor="let item of cities | filter:filterPost">
+            <a *ngIf="filterPost" (click)="dataInput(item)"
+              class="list-group-item border-opacity-25 list-group-item-action">{{item.ciudad}}</a>
+          </div>
+
+        </div>
+
+        <fa-icon (click)="ciudadSeleccion()" class="col-sm-4" [icon]="faPlus"></fa-icon>
 
       </div>
+      <hr>
 
+      <div class="list-group ciudades-control" *ngFor="let item of ciudadesAr" >
 
+       <label  class="label-c">Ubicacion:*</label>
+       <label  class=" ciudad-control">{{item || 'Sin datos'}}</label>
+       <fa-icon (click)="eliminarSeleccion(item)" class="ciudad-control-delete" [icon]="faMinusSquare"></fa-icon>
+      </div>
 
       <div class="col-sm-12 mt-5">
         <button type="button" class="btn btn-primary float-end pt-2" btn-lg btn-block
           (click)="agregar()">Agregar</button>
       </div>
+
+
 
     </div>
   </form>
