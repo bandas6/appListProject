@@ -5,6 +5,7 @@ import { City, Projec } from '../interfaces/interfaces';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faMinusSquare } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './formulario.component.html',
   styleUrls: ['./formulario.component.css']
 })
-export class FormularioComponent implements OnInit , OnDestroy {
+export class FormularioComponent implements OnInit, OnDestroy {
 
   faMinusSquare = faMinusSquare;
   faPlus = faPlus;
@@ -21,13 +22,15 @@ export class FormularioComponent implements OnInit , OnDestroy {
   filterPost: any;
   ciudadesAr: any[] = [];
   modificar: boolean = false;
+  idProd: string;
 
-  subcripcion:Subscription = null;
+  subcripcion: Subscription = null;
 
   miFormulario: any;
 
   constructor(private fb: FormBuilder,
-    private dataService: DataService) {
+              private dataService: DataService,
+              private router:Router) {
     this.getCities();
   }
 
@@ -44,16 +47,15 @@ export class FormularioComponent implements OnInit , OnDestroy {
       descripcion: new FormControl('', [Validators.required])
     })
 
-   this.subcripcion = this.dataService.getProject
-       .subscribe( ( dataPro ) => {
-
-
-        this.modificarOb(dataPro._id,dataPro);
+    this.subcripcion = this.dataService.getProject
+      .subscribe((dataPro) => {
         if (dataPro) {
+          this.idProd = dataPro._id;
+
           this.modificar = true;
           this.miFormulario.get('nombre').setValue(dataPro.nombre);
           this.miFormulario.get('descripcion').setValue(dataPro.descripcion);
-        this.obtenerCiudades(dataPro.cities)
+          this.obtenerCiudades(dataPro.cities)
           console.log(this.miFormulario)
         }
       })
@@ -111,23 +113,35 @@ export class FormularioComponent implements OnInit , OnDestroy {
     }, 10)
   }
 
-  obtenerCiudades(ciudades){
+  obtenerCiudades(ciudades) {
     const ciudadesAr = ciudades.split(',');
-    for(let i of ciudadesAr){
+    for (let i of ciudadesAr) {
       this.ciudadesAr.push(i);
     }
     console.log(this.cities)
   }
 
   eliminarSeleccion(item: string) {
-     let i = this.ciudadesAr.indexOf(item)
-     this.ciudadesAr.splice(i,1);
+    let i = this.ciudadesAr.indexOf(item)
+    this.ciudadesAr.splice(i, 1);
   }
 
-  modificarOb(id?,dataProd?){
-       //TODO: Actualizar datos
-       console.log(dataProd , id)
-       this.dataService.putProject(id,dataProd)
-       .subscribe( resp => console.log(resp));
+  //TODO: Actualizar datos
+  modificarOb() {
+    const { nombre, descripcion } = this.miFormulario.value;
+    const stringCities = this.ciudadesAr.toString();
+
+
+    const projecto = {
+      nombre,
+      descripcion,
+      cities: stringCities
+    }
+    console.log(this.idProd,projecto)
+
+    this.dataService.putProject(this.idProd, projecto)
+      .subscribe(resp => console.log(resp));
+
+      this.router.navigate(['board/projects'])
   }
 }
